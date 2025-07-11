@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout | Just Denim</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .product-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+    .product-card { text-align: center; max-width: 220px; }
+    .product-card img { width: 200px; height: 200px; object-fit: cover; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    .product-card input { margin-top: 10px; padding: 8px; width: 100%; border-radius: 6px; border: 1px solid #ccc; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+    .cart-button { background: #007acc; color: #fff; border: none; border-radius: 8px; font-weight: 600; padding: 10px 18px; cursor: pointer; }
+    .cart-button:hover { background: #005f99; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 999; }
+    .modal-content { background: #fff; margin: 10% auto; padding: 20px; border-radius: 10px; max-width: 400px; }
+    .close { float: right; font-size: 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="products.html" class="active">Products</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <h1>Checkout</h1>
+
+  <div class="checkout-container">
+    <h2>Your shopping cart includes:</h2>
+    <div id="designList"></div>
+
+    <div class="summary">
+      Total Items: <span id="totalItems">0</span><br>
+      Estimated Total: ₦<span id="totalCost">0</span>
+    </div>
+
+    <h3 style="margin-top:25px">Payment Method</h3>
+    Bank Transfer – Ekei Eneobong  7054217026  Opay
+
+    <h3 style="margin-top:25px">Delivery</h3>
+    <select id="delivery">
+      <option value="Dispatch">Dispatch</option>
+      <option value="Pickup">Pickup</option>
+    </select>
+
+    <h3 style="margin-top:25px">Notes</h3>
+    <textarea id="notes" rows="4" style="width:100%;border-radius:6px;border:1px solid #ccc"></textarea>
+
+    <button class="primary" onclick="confirmOrder()">Confirm Order</button>
+  </div>
+
+  <footer>
+    <div class="footer-brand">Just Denim</div>
+    <div class="footer-socials">
+      <a href="https://instagram.com/just___denim" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://twitter.com/Just__Denim" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+    </div>
+    <p>&copy; 2020 Just Denim. All rights reserved.</p>
+  </footer>
+
+<script>
+let cart = JSON.parse(localStorage.getItem('justDenimCart') || '[]');
+const listDiv = document.getElementById('designList');
+
+function render() {
+  if (!cart.length) {
+    listDiv.innerHTML = '<p style="color:#888">Your cart is empty.</p>';
+    document.getElementById('totalItems').textContent = '0';
+    document.getElementById('totalCost').textContent = '0';
+    return;
+  }
+
+  listDiv.innerHTML = cart.map((item, i) => `
+    <div class="design-entry">
+      <input value="${item.note}" onchange="cart[${i}].note = this.value; save();" />
+      <button onclick="remove(${i})">&times;</button>
+    </div>
+    <div style="font-size:14px;margin-bottom:10px;color:#007acc;">
+      <strong>${item.label}</strong> — ₦${item.price.toLocaleString()}
+    </div>
+  `).join('');
+
+  document.getElementById('totalItems').textContent = cart.length;
+  const totalPrice = cart.reduce((sum, item) => sum + (item.price || 0), 0);
+  document.getElementById('totalCost').textContent = totalPrice.toLocaleString();
+}
+
+function remove(idx) {
+  cart.splice(idx, 1);
+  save();
+}
+
+function save() {
+  localStorage.setItem('justDenimCart', JSON.stringify(cart));
+  render();
+}
+
+render();
+
+function confirmOrder() {
+  if (cart.length === 0) {
+    alert('Cart empty 🙃');
+    return;
+  }
+  const method = document.getElementById('delivery').value;
+  alert(`✅ Order confirmed!\nItems: ${cart.length}\nDelivery: ${method}`);
+  localStorage.removeItem('justDenimCart');
+  window.location = 'index.html';
+}
+</script>
+
+</body>
+</html>
